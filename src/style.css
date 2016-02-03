@@ -1,0 +1,22 @@
+#terminal {
+  position: relative;
+  color: white;
+  background: black;
+  height: 200px;
+  width: 400px;
+}
+
+#terminal-input {
+  position: absolute;;
+  color: white;
+  width: 98.5%;
+  background: black;
+  bottom: 0;
+}
+
+.ssh {
+  color: magenta;
+}
+/*#results {
+  color: white;
+}*/

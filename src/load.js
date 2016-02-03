@@ -1,11 +1,10 @@
 'use strict';
 
-const exec = require('child_process').exec;
-const $ = require('jquery');
-// window.$ = window.jQuery = require('jquery')
+const cp = require('child_process');
+// const $ = require('jquery');
 
 
-let proc = exec('nmap -sn -PS22 10.8.0.*', {
+let proc = cp.exec('nmap -sn -PS22 10.8.0.*', {
   shell: "/bin/bash"
 }, (err, stdout, stderr) => {
   if(err) {
@@ -14,29 +13,36 @@ let proc = exec('nmap -sn -PS22 10.8.0.*', {
   else {
     let re = stdout.match(/\d+\.\d+\.\d+\.\d+/g);
     let hosts = re.map((host) => {
-      return `<div>Found ${host}, <a id="blah" class="ssh" href="#">ssh</a></div>`
+      return `<div>Found ${host} <a id="${host}" class="ssh" href="#">Click to SSH</a></div>`
     })
-    document.getElementById('results').innerHTML = hosts.join('')
+    $('#results').append(hosts.join(''))
+    let newSSH = cp.fork(`${__dirname}/src/child.js`);
+    newSSH.on("message", (m) => {
+      console.log("Message Received: ", m)
+    })
+
+    $('.ssh').on('click', function() {
+      console.log("clicked")
+      let ip = this.id;
+      if(ip === '10.8.0.22') {
+        newSSH.send({hello: "world"})
+      }
+      if(ip === "10.8.0.6") {
+        let file = cp.execFile("ssh", ['user@ip', 'pm2 list']);
+        file.stdout.on('data', (data) => {
+          console.log(data);
+        })
+        file.stderr.on('data', (data) => {
+          console.log(data);
+        })
+        file.on('exit', () => {
+          console.log("exit")
+        })
+      }
+    })
   }
 
-
 });
-
-$('#main').on('click', function() { console.log("fesfsef") })
-
-
-$('#blah').on('click', function() {
-  console.log("herer")
-  var ip = this.id;
-  console.log(ip)
-  // if(ip === '10.8.0.22') {
-  //   var newSSH = exec(`ssh kc@${ip}`, {shell: "/bin/bash"}, function(err, stdo, stde) {
-  //     console.log(stdo);
-  //     console.log(err);
-  //     console.log(std);
-  //   })
-  // }
-})
 
 
 setTimeout(() => {
