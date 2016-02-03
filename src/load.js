@@ -1,50 +1,59 @@
 'use strict';
 
 const cp = require('child_process');
-// const $ = require('jquery');
+const fs = require('fs');
+const os = require('os')
 
 
-let proc = cp.exec('nmap -sn -PS22 10.8.0.*', {
-  shell: "/bin/bash"
-}, (err, stdout, stderr) => {
-  if(err) {
-    document.getElementById('results').innerHTML = "<div>No hosts found, are you connected to the VPN?"
+// let proc = cp.exec('nmap -sn -PS22 10.8.0.*', {
+//   shell: "/bin/bash",
+//   timeout: 15000
+// }, (err, stdout, stderr) => {
+//   if(err) {
+//     document.getElementById('results').innerHTML = "<div>No hosts found, are you connected to the VPN?"
+//   }
+//   else {
+//     let re = stdout.match(/\d+\.\d+\.\d+\.\d+/g);
+//     let hosts = re.map((host) => {
+//       return `<div>Found ${host} <a id="${host}" class="ssh" href="#">Click to SSH</a></div>`
+//     })
+//     $('#results').append(hosts.join(''))
+//   }
+//
+//   $('.ssh').on('click', function() {
+//     console.log("clicked")
+//     let ip = this.id;
+//   })
+//
+// });
+
+let child = cp.spawn(`ssh`, ['user@ip'], {
+  detached: true,
+  stdio: ['pipe', 'pipe', 'pipe']
+})
+
+child.stdout.on('data', (data) => {
+  console.log(`Out: ${data}`)
+  $('#results').append(`<br>Out: ${data}`)
+})
+
+child.stderr.on('data', (data) => {
+  console.log(`Err: ${data}`)
+  if(data.indexOf("stdin") === -1){
+    $('#results').append(`<br>Err: ${data}`)
   }
-  else {
-    let re = stdout.match(/\d+\.\d+\.\d+\.\d+/g);
-    let hosts = re.map((host) => {
-      return `<div>Found ${host} <a id="${host}" class="ssh" href="#">Click to SSH</a></div>`
-    })
-    $('#results').append(hosts.join(''))
-    let newSSH = cp.fork(`${__dirname}/src/child.js`);
-    newSSH.on("message", (m) => {
-      console.log("Message Received: ", m)
-    })
+})
+child.on('exit', (data) => {
+  console.log(`Exit: ${data}`)
+  $('#results').append(`<br>Exit: ${data}`)
+})
 
-    $('.ssh').on('click', function() {
-      console.log("clicked")
-      let ip = this.id;
-      if(ip === '10.8.0.22') {
-        newSSH.send({hello: "world"})
-      }
-      if(ip === "10.8.0.6") {
-        let file = cp.execFile("ssh", ['user@ip', 'pm2 list']);
-        file.stdout.on('data', (data) => {
-          console.log(data);
-        })
-        file.stderr.on('data', (data) => {
-          console.log(data);
-        })
-        file.on('exit', () => {
-          console.log("exit")
-        })
-      }
-    })
+$('#terminal-input').on('keypress', (e) => {
+  if(e.keyCode == 13) {
+    let input = $('#terminal-input').val()
+    child.stdin.setEncoding('utf8');
+    child.stdin.write("echo "+input.replace(/[|:;\\'"]/gim, ""));
+    child.stdin.write(os.EOL);
+    $('#terminal-input').val('');
   }
-
-});
-
-
-setTimeout(() => {
-  proc.kill('SIGHUP')
-}, 10000)
+})

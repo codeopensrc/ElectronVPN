@@ -2,8 +2,9 @@
   position: relative;
   color: white;
   background: black;
-  height: 200px;
-  width: 400px;
+  height: 250px;
+  width: 800px;
+  overflow-y: scroll;
 }
 
 #terminal-input {
@@ -11,7 +12,7 @@
   color: white;
   width: 98.5%;
   background: black;
-  bottom: 0;
+  bottom: 0px;
 }
 
 .ssh {
