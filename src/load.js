@@ -2,8 +2,54 @@
 
 const cp = require('child_process');
 const fs = require('fs');
-const os = require('os')
+const os = require('os');
+const Websocket = require('ws');
+const webSocketUrl = "http://localhost";
 
+let WS = '';
+let curChatroom = ''
+
+const newWebSocket = function(newChatId) {
+  let chat = newChatId ? newChatId : "Chatroom-1";
+  WS = new Websocket(`${webSocketUrl}:5050/${chat}`);
+  WS.on('open', () => {
+    WS.send(`Client connected to ${chat}`);
+    curChatroom = chat;
+  });
+  WS.on('message', (data, flags) => {
+    $('#results').append(`${data}<br>`);
+    $("#terminal").scrollTop($("#terminal")[0].scrollHeight);
+  });
+  WS.on('close', () => {
+    console.log(`Disconnected from ${chat}`)
+  });
+};
+
+newWebSocket();
+
+$('#terminal-input').on('keypress', (e) => {
+  if(e.keyCode == 13) {
+    let input = $('#terminal-input').val()
+    WS.send(input);
+    $('#terminal-input').val('');
+  }
+});
+
+$('.chat').on('click', function() {
+  WS.send(`Client disconnected from ${curChatroom}`);
+  setTimeout(() => {
+    WS.close();
+    let newChatId = this.id;
+    newWebSocket(newChatId);
+  }, 100)
+
+})
+
+
+// $.post("http://localhost:8080", JSON.stringify({data: "hello"}), (data) => {
+//   // console.log(data);
+//   console.log("Received res")
+// });
 
 // let proc = cp.exec('nmap -sn -PS22 10.8.0.*', {
 //   shell: "/bin/bash",
@@ -26,34 +72,24 @@ const os = require('os')
 //   })
 //
 // });
-
-let child = cp.spawn(`ssh`, ['user@ip'], {
-  detached: true,
-  stdio: ['pipe', 'pipe', 'pipe']
-})
-
-child.stdout.on('data', (data) => {
-  console.log(`Out: ${data}`)
-  $('#results').append(`<br>Out: ${data}`)
-})
-
-child.stderr.on('data', (data) => {
-  console.log(`Err: ${data}`)
-  if(data.indexOf("stdin") === -1){
-    $('#results').append(`<br>Err: ${data}`)
-  }
-})
-child.on('exit', (data) => {
-  console.log(`Exit: ${data}`)
-  $('#results').append(`<br>Exit: ${data}`)
-})
-
-$('#terminal-input').on('keypress', (e) => {
-  if(e.keyCode == 13) {
-    let input = $('#terminal-input').val()
-    child.stdin.setEncoding('utf8');
-    child.stdin.write("echo "+input.replace(/[|:;\\'"]/gim, ""));
-    child.stdin.write(os.EOL);
-    $('#terminal-input').val('');
-  }
-})
+//
+// let child = cp.spawn(`ssh`, ['user@ip'], {
+//   detached: true,
+//   stdio: ['pipe', 'pipe', 'pipe']
+// })
+//
+// child.stdout.on('data', (data) => {
+//   console.log(`Out: ${data}`)
+//   $('#results').append(`<br>Out: ${data}`)
+// })
+//
+// child.stderr.on('data', (data) => {
+//   console.log(`Err: ${data}`)
+//   if(data.indexOf("stdin") === -1){
+//     $('#results').append(`<br>Err: ${data}`)
+//   }
+// })
+// child.on('exit', (data) => {
+//   console.log(`Exit: ${data}`)
+//   $('#results').append(`<br>Exit: ${data}`)
+// })

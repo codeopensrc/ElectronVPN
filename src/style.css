@@ -3,21 +3,17 @@
   color: white;
   background: black;
   height: 250px;
-  width: 800px;
+  width: 350px;
   overflow-y: scroll;
 }
 
 #terminal-input {
-  position: absolute;;
+  position: relative;
   color: white;
-  width: 98.5%;
+  width: 350px;
   background: black;
-  bottom: 0px;
 }
 
 .ssh {
   color: magenta;
 }
-/*#results {
-  color: white;
-}*/
