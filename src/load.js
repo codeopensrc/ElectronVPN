@@ -4,7 +4,7 @@ const cp = require('child_process');
 const fs = require('fs');
 const os = require('os');
 const Websocket = require('ws');
-const webSocketUrl = "http://localhost";
+const webSocketUrl = "ws://ws.cjones.tk";
 
 let WS = '';
 let curChatroom = ''
@@ -41,7 +41,7 @@ $('.chat').on('click', function() {
     WS.close();
     let newChatId = this.id;
     newWebSocket(newChatId);
-  }, 100)
+  }, 50)
 
 })
 
