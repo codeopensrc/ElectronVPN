@@ -4,14 +4,21 @@ const cp = require('child_process');
 const fs = require('fs');
 const os = require('os');
 const Websocket = require('ws');
-const webSocketUrl = "ws://ws.cjones.tk";
+const webSocketUrl = "wss://cjones-nodejs.herokuapp.com";
+// const webSocketUrl = "ws://localhost";
 
 let WS = '';
-let curChatroom = ''
+let curChatroom = '';
 
 const newWebSocket = function(newChatId) {
   let chat = newChatId ? newChatId : "Chatroom-1";
-  WS = new Websocket(`${webSocketUrl}:5050/${chat}`);
+
+  WS = new Websocket(`${webSocketUrl}/${chat}`
+    , {
+    protocolVersion: 8,
+    origin: 'https://cjones-nodejs.herokuapp.com'
+  }
+  );
   WS.on('open', () => {
     WS.send(`Client connected to ${chat}`);
     curChatroom = chat;
