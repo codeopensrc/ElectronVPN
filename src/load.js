@@ -4,7 +4,7 @@ const cp = require('child_process');
 const fs = require('fs');
 const os = require('os');
 const Websocket = require('ws');
-const webSocketUrl = "http://localhost";
+const webSocketUrl = "ws://10.8.0.1";
 
 let WS = '';
 let curChatroom = ''
