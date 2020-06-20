@@ -3,7 +3,5 @@ logs
 .git
 dumps
 
-app.bundle.js
 npm-debug.log
 .DS_Store
-*.xls

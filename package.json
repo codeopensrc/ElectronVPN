@@ -1,12 +1,30 @@
 {
-  "name": "ElectronVPN",
-  "version": "0.0.1",
-  "main": "main.js",
-  "scripts": {
-    "start": "electron main.js"
-  },
-  "dependencies" :{
-    "jquery": "^2.1.4",
-    "ws": "*"
-  }
+    "name": "ElectronVPN",
+    "version": "0.0.1",
+    "main": "index.js",
+    "dependencies" :{
+        "jquery": "^2.1.4",
+        "ws": "*"
+    },
+    "devDependencies": {
+        "babel-core": "^6.22.1",
+        "babel-loader": "^6.2.4",
+        "babel-preset-es2015": "^6.22.0",
+        "babel-preset-react": "^6.22.0",
+        "babel-preset-stage-0": "^6.22.0",
+        "less": "^2.7.1",
+        "less-loader": "^2.2.3",
+        "css-loader": "^0.26.1",
+        "json-loader": "^0.5.4",
+        "file-loader": "^0.11.2",
+        "react": "^15.3.0",
+        "react-dom": "^15.3.0",
+        "style-loader": "^0.13.1",
+        "webpack": "^1.14.0"
+    },
+    "scripts": {
+        "start": "cd pub && /usr/local/bin/electron .",
+        "watch": "webpack --config='src/config/webpack.config.js' --progress --colors --watch",
+        "release": "webpack --config='src/config/webpack.config.js' --progress --colors --optimize-minimize"
+    }
 }

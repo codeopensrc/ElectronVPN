@@ -1,0 +1,45 @@
+version: "3"
+services:
+    main:
+        build: .
+        image: jestrr/electronvpn:0.0.1
+        entrypoint: ["bash", "/home/app/run.sh"]
+        volumes:
+            - /tmp/.X11-unix:/tmp/.X11-unix
+            - ./package.json:/home/app/package.json
+            - ./src:/home/app/src
+            - ./server:/home/app/server
+            - ./run.sh:/home/app/run.sh
+            - $HOME/code/vpn/no-route.ovpn:/root/vpn/no-route.ovpn
+            # - ./pub:/home/app/pub
+        devices:
+            - /dev/net/tun:/dev/net/tun
+            # - "/dev/ttyUSB0:/dev/ttyUSB0"
+        cap_add:
+            - NET_ADMIN
+        network_mode: "host"
+        deploy:
+            replicas: 1
+            update_config:
+                parallelism: 1
+                delay: 10s
+            restart_policy:
+                max_attempts: 3
+                condition: on-failure
+        ports:
+            # HOST:CONTAINER
+            - "2000:2000"
+        labels:
+            com.consul.service: vpn
+        environment:
+            PUB_FILES: ./pub/
+            BIN: ./server/bin/
+            OUTPUT_FILES: ./server/output/
+            DISPLAY: $DISPLAY
+            PROXY_NET_PORT: 2000
+
+            # Consul
+            SERVICE_NAME: vpn
+            SERVICE_PORT: 7020
+            REGISTER_SERVICE: "false"
+            IMAGE_VER: 0.0.1

@@ -57,6 +57,9 @@ $('.chat').on('click', function() {
 //   console.log("Received res")
 // });
 
+// let cmd = "nmap -sP -PS1194 10.8.0.0/24"
+// let cmd = 'nmap -sn -PS22 10.8.0.*'
+// let cmd = 'nmap -sP 10.8.0.*'
 // let proc = cp.exec('nmap -sn -PS22 10.8.0.*', {
 //   shell: "/bin/bash",
 //   timeout: 15000
