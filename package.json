@@ -3,7 +3,7 @@
     "version": "0.0.1",
     "main": "index.js",
     "dependencies" :{
-        "jquery": "^2.1.4",
+        "jquery": "^3.5.1",
         "ws": "*"
     },
     "devDependencies": {
